@@ -72,6 +72,7 @@ public class CodegenConstants {
     public static final String PACKAGE_CULTURE = "packageCulture";
     public static final String PACKAGE_CONFIGURATION = "packageConfiguration";
     public static final String POD_VERSION = "podVersion";
+    public static final String MAJOR_VERSION = "majorVersion";
 
     public static final String OPTIONAL_METHOD_ARGUMENT = "optionalMethodArgument";
     public static final String OPTIONAL_METHOD_ARGUMENT_DESC = "Optional method argument, e.g. void square(int x=10) (.net 4.0+ only).";
