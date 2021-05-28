@@ -19,6 +19,7 @@ public class GoClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     protected String packageName = "swagger";
     protected String packageVersion = "1.0.0";
+    protected String majorVersion = "v1";
     protected String apiDocPath = "docs/";
     protected String modelDocPath = "docs/";
 
@@ -110,6 +111,8 @@ public class GoClientCodegen extends DefaultCodegen implements CodegenConfig {
                 .defaultValue("swagger"));
         cliOptions.add(new CliOption(CodegenConstants.PACKAGE_VERSION, "Go package version.")
                 .defaultValue("1.0.0"));
+        cliOptions.add(new CliOption(CodegenConstants.MAJOR_VERSION, "Major version of the package")
+                .defaultValue("v1"));
     }
 
     @Override
@@ -135,6 +138,12 @@ public class GoClientCodegen extends DefaultCodegen implements CodegenConfig {
         
         additionalProperties.put("apiDocPath", apiDocPath);
         additionalProperties.put("modelDocPath", modelDocPath);
+
+        if (additionalProperties.containsKey(CodegenConstants.MAJOR_VERSION)) {
+            setMajorVersion((String) additionalProperties.get(CodegenConstants.MAJOR_VERSION));
+        }
+
+        additionalProperties.put(CodegenConstants.MAJOR_VERSION, majorVersion);
 
         modelPackage = packageName;
         apiPackage = packageName;
@@ -449,5 +458,9 @@ public class GoClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     public void setPackageVersion(String packageVersion) {
         this.packageVersion = packageVersion;
+    }
+
+    public void setMajorVersion(String majorVersion) {
+        this.majorVersion = majorVersion;
     }
 }
