@@ -11,6 +11,7 @@ public class GoClientOptionsProvider implements OptionsProvider {
 
     public static final String PACKAGE_VERSION_VALUE = "1.0.0";
     public static final String PACKAGE_NAME_VALUE = "Go";
+    public static final String MAJOR_VERSION_VALUE = "1";
 
     @Override
     public String getLanguage() {
@@ -23,6 +24,7 @@ public class GoClientOptionsProvider implements OptionsProvider {
         return builder
                 .put(CodegenConstants.PACKAGE_VERSION, PACKAGE_VERSION_VALUE)
                 .put(CodegenConstants.PACKAGE_NAME, PACKAGE_NAME_VALUE)
+                .put(CodegenConstants.MAJOR_VERSION, MAJOR_VERSION_VALUE)
                 .build();
     }
 
