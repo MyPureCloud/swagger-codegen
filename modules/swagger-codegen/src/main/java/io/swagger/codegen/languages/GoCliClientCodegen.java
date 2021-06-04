@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GoCliClientCodegen extends PureCloudGoClientCodegen {
     protected Logger LOGGER = LoggerFactory.getLogger(GoCliClientCodegen.class);
@@ -82,7 +79,13 @@ public class GoCliClientCodegen extends PureCloudGoClientCodegen {
     @Override
     public String toApiFilename(String name) {
         name = name.toLowerCase();
-        return name + File.separatorChar + name;
+        name = name + File.separatorChar + name;
+
+        name = name.replaceAll("_test$", "_testfile");
+        name = name.replaceAll("_test/", "_testfile/");
+        name = name.replaceAll("-", "");
+
+        return name;
     }
 
     private int firstIndexOfCapital(String str) {
@@ -108,13 +111,9 @@ public class GoCliClientCodegen extends PureCloudGoClientCodegen {
 
         // post -> create
         // patch or put -> update (will cause a clash if a resource has both, this would have to be resolved by overriding one or both operationIds)
-        // get -> get (no change)
-        // gets -> list
         operationId = operationId
                 .replaceAll("^post", "create")
                 .replaceAll("^patch|^put", "update");
-        if (operationId.startsWith("get") && operationId.endsWith("s"))
-            operationId = operationId.replaceAll("^get", "list");
         operationId = operationId.replaceAll("s*$", "");
 
         return operationId;
@@ -170,18 +169,40 @@ public class GoCliClientCodegen extends PureCloudGoClientCodegen {
 
     @Override
     public String toApiVarName(String name) {
-        return name.toLowerCase();
+        name = name.toLowerCase();
+        name = name.replaceAll("_test$", "_testfile");
+        name = name.replaceAll("_test/", "_testfile/");
+
+        return name;
     }
 
     @Override
     public void postProcessParameter(CodegenParameter parameter) {
         super.postProcessParameter(parameter);
 
-        if (parameter.description != null) {
-            parameter.description = parameter.description
-                    .replace("\\\"", "")
-                    .replace("'", "`");
+        if (parameter.description != null)
+            parameter.description = processDescription(parameter.description);
+    }
+
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> objectMap = (Map<String, Object>) objs.get("operations");
+        @SuppressWarnings("unchecked")
+        List<CodegenOperation> operations = (List<CodegenOperation>) objectMap.get("operation");
+        for (CodegenOperation operation : operations) {
+            if (operation.summary != null)
+                operation.summary = processDescription(operation.summary);
         }
+
+        return super.postProcessOperations(objs);
+    }
+
+    private String processDescription(String description) {
+        return description
+                .replace("\\\"", "")
+                .replace("&", "and")
+                .replace("'", "`");
     }
 
     @Override
@@ -194,6 +215,6 @@ public class GoCliClientCodegen extends PureCloudGoClientCodegen {
                 buf.append(StringUtils.capitalize(part));
             }
         }
-        return buf.toString().replaceAll("[^a-zA-Z_ ]", "");
+        return buf.toString().replaceAll("[^a-zA-Z0-9_ ]", "");
     }
 }
