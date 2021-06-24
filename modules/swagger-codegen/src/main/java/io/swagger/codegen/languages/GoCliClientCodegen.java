@@ -88,34 +88,8 @@ public class GoCliClientCodegen extends PureCloudGoClientCodegen {
         return name;
     }
 
-    private int firstIndexOfCapital(String str) {
-        for (int i = 0; i < str.length(); i++) {
-            if (Character.isUpperCase(str.charAt(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     @Override
     public String toOperationId(String operationId) {
-        final String SWAGGER_OVERRIDE = "SWAGGER_OVERRIDE_";
-        if (operationId.contains(SWAGGER_OVERRIDE)) {
-            return operationId.replace(SWAGGER_OVERRIDE, "");
-        }
-
-        // OperationIds look like getRoutingSkills or deleteRoutingSkill etc, change it to gets or delete in this step
-        boolean isPlural = operationId.endsWith("s");
-        operationId = operationId.substring(0, firstIndexOfCapital(operationId));
-        operationId += isPlural ? "s" : "";
-
-        // post -> create
-        // patch or put -> update (will cause a clash if a resource has both, this would have to be resolved by overriding one or both operationIds)
-        operationId = operationId
-                .replaceAll("^post", "create")
-                .replaceAll("^patch|^put", "update");
-        operationId = operationId.replaceAll("s*$", "");
-
         return operationId;
     }
 
